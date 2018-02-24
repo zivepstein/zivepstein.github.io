@@ -1,0 +1,161 @@
+<html lang="en">
+  <head>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+   <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<link rel="stylesheet" href="css/style.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<link href="css/navbar-fixed-side.css" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css">
+
+  </head>
+  <body>
+ <div class="container-fluid">
+<nav class="navbar navbar-fixed-side">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+       <a href="index.html" class="logo"><img src="img/logo.png" /></a>
+       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+          <li><a href="about.html" class = "inactive">learn more</a></li>
+          <li><a href="launchBox.html" class = "inactive">examine</a></li>
+          <li class = "devButton"><a style = "color:white" href="upload.html">contribute</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  
+</nav>
+</div><!-- /.container-fluid -->
+<div class = "content">
+  <a href = "about.html"><img class = "banner" src="img/banner.png" width="100%"/> </a>
+<!--<div class = "landImage"><img src="img/cv.png" width="100%"/> </div>
+<div class = "splashSpacer"></div>-->
+<p>Contributors can upload artificial intelligence systems to TuringBox. As a contributor, you can upload an system to have it benchmarked and to score points for important boxes. You can also explore the latest and most popular boxes in your community (some have bounties!).</p>
+  <div class="row">
+    <div class="col-sm-6">
+<div class = "explore">
+    <h3>Upload an AI system</h3>
+<form id="ALG">
+        <div class="form-group">
+            <label for="exampleAlgName">Title</label>
+            <input type="text" class="form-control" id="exampleAlgName" placeholder="...">
+        </div>
+        <div class="form-group">
+           <div class="col-sm-6 noPadding">
+              <label for="exampleSelect1">Stimulus Type</label>
+    <select class="form-control" id="exampleSelect1">
+      <option>Image</option>
+      <option>Text</option>
+      <option>Time/Space Blocks</option>
+      <option>Matrix Game Situation</option>
+    </select>
+           </div>       
+           <div class="col-sm-6 noPadding">
+             <label for="exampleSelect1">Output</label>
+    <select class="form-control" id="exampleSelect1">
+      <option>Nudity Detection Score</option>
+      <option>Object Classifier</option>
+      <option>Natural Language description</option>
+      <option>Probability of Crime</option>
+      <option>Cooperation decision</option>
+    </select>
+           </div>
+    </div>
+           
+
+        <div class="form-group">
+           <div class="col-sm-6 noPadding">
+             <label for="exampleSelect1">Metrics</label>
+    <select class="form-control" id="exampleSelect1">
+      <option>Accuracy</option>
+      <option>Disparate Treatment</option>
+    </select>
+           </div>
+   <div class="col-sm-6 noPadding">
+            <label for="exampleAlgorithmFile">Upload</label>
+            <input type="file" class="form-control-file" id="exampleAlgorithmFile">
+        </div>
+      </div>
+        <button type="button" class="btn btn-new" id = "submitAlg">Submit</button>
+    </form>
+</div>
+ 
+</div>
+  <div class="col-sm-6">
+    <img style = "display:none" src="img/dev-results.png" id = "results" width = "80%;">
+  </div>
+     
+         
+
+</div>
+ 
+<h3 style = "display:none" id = "tableText"> Boxes recommended for you</h3>
+<table style = "display:none" class="table table-curved" id = "algs">
+          <thead>
+          <tr>
+            <th>Metric</th>
+              <th>Question</th>
+              <th>Stimulus Type</th>
+              <th>Output</th>
+              <th>Popularity</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr onclick="window.location='box1.html';">
+             <td>Disparate Treatment</td>
+              <td>Does body type matter?</td>
+              <td>Images of swimwear models</td>
+              <td>Adult Content Moderation Scores</td>
+              <td><i class="far fa-thumbs-up"></i>8</td>
+             
+          </tr>
+          <tr>
+            <td>Cultural Differences in Empathy</td>
+              <td>Emotional Affect in Style Transfer</td>
+              <td>Images of Disasters</td>
+              <td>Stylized Images</td>
+              <td><i class="far fa-thumbs-up"></i>22</td>
+
+          </tr>
+          <tr>
+            <td>Percent Match</td>
+              <td>Are Arts and Culture Apps Racist?</td>
+              <td>Image of Face</td>
+              <td>Portrait</td>
+              <td><i class="far fa-thumbs-up"></i>47</td>
+          </tr>
+          </tbody>
+      </table>
+
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script>
+  $('#submitAlg').click(function(){
+     $('#results').show();
+     $('#algs').show();
+     $('#tableText').show();
+});
+</script>
+</div>
+  </body>
+</html>
