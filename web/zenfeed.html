@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>ZenFeed</title>
+  
+  <link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
+      <link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css?family=Cormorant+Garamond" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-111525761-7"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-111525761-7');
+</script>
+
+
+</head>
+
+<body>
+	<iframe src="sounds/gong1.wav" allow="autoplay" id="audio" style="display:none"></iframe>
+	<audio id="player" autoplay>
+    <source src="sounds/gong1.wav" type="audio/wave">
+</audio>
+
+	<div class = "content">
+		<div class = "welcome_mat">zenfeed</div>
+		
+		<div class = "page">
+			<div class = "about" style = "display: none">
+				<p>Today, our feeds control us. Social media floods us with a deluge of information that is at once overwhelming, addicting and empty. But how can our information diets be a source of awareness? </p>
+				<br>
+				<p>When one meditates, the goal is to maintain a blank mind and focus on the breathe. Thoughts come and go, but the critical teaching is to let them be water under the bridge and not get pulled into their immersive mental formation. Sometimes certain thoughts recur frequently, indicating some underlying disposition. By simply observing these thoughts and their patterns, meditation provides insights into consciousness, and deep-rooted awareness.</p>
+				<br>
+				<p>Just as these errant thoughts can be obstacles to help facilitate awareness, so can the contents your newsfeed. zenfeed is a extended intelligence tool that provides an alternative view into social media, thus turning it into a meditative act.</p>
+			</div>
+			<div class = "zen" style = "display: none">
+				<p>zenfeed is a chrome extension that transforms your Twitter newsfeed into a one minute meditative experience. Watch your feed become an empty vessel for reflection and relaxation, as your tweets bounce about. See you if you can let them go and focus rather on your own breathing.</p>
+				<br>
+				
+				  <a href = "https://chrome.google.com/webstore/detail/zenfeed/impalgjkhnjepbjeppillkmccphnefjh?authuser=2" style = " cursor: crosshair;"><img id = "innerLogo1" src="images/zencloud-click.png" alt="Girl in a jacket" width = "60%"></a>
+			</div>
+			<div class = "team" style = "display: none">
+				<p>zenfeed was incepted and nurtured in the <a href = "https://awareness.pubpub.org/">Principles of Awareness</a> class at the MIT Media Lab.</p>
+				<br>
+				built by: <br>
+				 <a href = "http://zepstein.com/">Ziv Epstein</a>, <a href = "http://boulais.io/">Oceane Boulais</a> and <a href = "http://mattgroh.com/">Matt Groh</a> 
+				 <br><br>
+
+				 advised by: <br>
+				  <a href = "http://web.media.mit.edu/~kdinakar/">Karthik Dinakar</a>, <a href = "https://www.media.mit.edu/people/aekblaw/overview/">Ariel Eckblaw</a>, <a href = "https://joi.ito.com/">Joi Ito</a> and <a href = "https://www.imonk.org/">the Venerable Tenzin Priyadarshi</a>.
+				  <br><br>
+				  Powered by d3.js and Wind Chime, Gamelan Gong, by InspectorJ (www.jshaw.co.uk) of Freesound.org<br>
+				  <img id = "innerLogo2" src="images/MIT_ML_Logo_grey.png" alt="Girl in a jacket" width = "30%">
+			</div>
+					<img id = "logo" src="images/circle.png" alt="Girl in a jacket" width = "40%">
+		</div>
+		<div class = "links" style = "display: none">
+			<ul>
+				<li id = "about" >about</li>
+				<li  id = "zen" >feed your zen</li> 
+				<li  id = "team" >team</li>
+			</ul>
+			</div>
+		
+	</div>
+
+  <!-- <div class="stars"></div> -->
+<!-- <div class="twinkling"></div> -->
+<div class="clouds" style = "display: none"></div>
+
+  
+  
+
+</body>
+<script>
+	setTimeout(function(){
+		$( ".links" ).fadeIn(3000);
+		$( ".clouds" ).fadeIn(5000);
+	}, 2000);
+
+$( "#about" ).click(function() {
+	$( "#logo" ).hide();
+	$( ".zen" ).hide();
+	$( ".team" ).hide();
+ 	$( ".about" ).show();
+});
+
+$( "#zen" ).click(function() {
+	$( "#logo" ).hide();
+ 	$( ".about" ).hide();
+ 	$( ".team" ).hide();
+ 	$( ".zen" ).show();
+});
+
+$( "#team" ).click(function() {
+	$( "#logo" ).hide();
+ 	$( ".about" ).hide();
+ 	$( ".zen" ).hide();
+ 	$( ".team" ).show();
+});
+</script>
+
+</html>
