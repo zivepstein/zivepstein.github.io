@@ -15,7 +15,80 @@
     font-family: 'Trebuchet MS', sans-serif;
   }
 
-  /* ===== Controls ===== */
+  /* ===== Loading Overlay ===== */
+  #loading {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, #111 0%, #000 80%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #ccc;
+    font-family: 'Cinzel', serif;
+    text-align: center;
+    z-index: 2000;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+
+  #loading.hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .planchette {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    border: 3px solid #a773ff;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #9f79ff, inset 0 0 10px #6230ff;
+    margin-bottom: 15px;
+    animation: spin 3.5s linear infinite, pulse 2s ease-in-out infinite;
+  }
+
+  .planchette::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    background: #a773ff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px #b794ff, 0 0 25px #9f79ff;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 15px #9f79ff, inset 0 0 10px #6230ff; }
+    50% { box-shadow: 0 0 25px #d3b3ff, inset 0 0 15px #9f79ff; }
+  }
+
+  .loading-text {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    animation: flicker 2s infinite;
+    text-shadow: 0 0 8px #9f79ff, 0 0 20px #9f79ff;
+  }
+
+  @keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+      opacity: 1;
+      text-shadow: 0 0 8px #a673ff, 0 0 20px #9f79ff;
+    }
+    20%, 24%, 55% {
+      opacity: 0.4;
+      text-shadow: none;
+    }
+  }
+
+  /* ===== Other styles (unchanged) ===== */
   #controls {
     padding: 10px;
     background: #111;
@@ -32,7 +105,6 @@
     font-size: 1rem;
   }
 
-  /* ===== Gallery Grid ===== */
   .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -76,21 +148,18 @@
     opacity: 0;
     transition: opacity 0.25s ease;
     text-align: left;
-    max-height: 100%;
-    overflow-y: auto;
   }
 
   .image-container:hover .overlay {
     opacity: 1;
   }
 
-  /* ===== Modal ===== */
   #modal {
     display: none;
     position: fixed;
     z-index: 1000;
     inset: 0;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0,0,0,0.9);
     justify-content: center;
     align-items: center;
   }
@@ -119,64 +188,10 @@
     color: white;
     cursor: pointer;
   }
-
-  /* ===== Seance Loading Animation ===== */
-  #loading {
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(circle at center, #111 0%, #000 80%);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #ccc;
-    font-family: 'Cinzel', serif;
-    text-align: center;
-    z-index: 2000;
-    transition: opacity 0.5s ease, visibility 0.5s ease;
-  }
-
-  #loading.hidden {
-    opacity: 0;
-    visibility: hidden;
-  }
-
-  .planchette {
-    width: 80px;
-    height: 80px;
-    border: 2px solid #666;
-    border-radius: 50%;
-    margin-bottom: 15px;
-    animation: spin 4s linear infinite;
-    box-shadow: 0 0 15px rgba(255,255,255,0.1);
-  }
-
-  @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  .loading-text {
-    font-size: 1.2rem;
-    letter-spacing: 2px;
-    animation: flicker 2s infinite;
-    text-shadow: 0 0 8px #9f79ff, 0 0 20px #9f79ff;
-  }
-
-  @keyframes flicker {
-    0%, 18%, 22%, 25%, 53%, 57%, 100% {
-      opacity: 1;
-      text-shadow: 0 0 8px #a673ff, 0 0 20px #9f79ff;
-    }
-    20%, 24%, 55% {
-      opacity: 0.4;
-      text-shadow: none;
-    }
-  }
 </style>
 </head>
 <body>
-  <!-- Seance Loading Screen -->
+  <!-- 🔮 Seance Loading Screen -->
   <div id="loading">
     <div class="planchette"></div>
     <div class="loading-text">🔮 Summoning images...</div>
@@ -191,7 +206,6 @@
 
   <div class="gallery" id="gallery"></div>
 
-  <!-- Modal -->
   <div id="modal">
     <div id="modalContent">
       <span id="modalClose">&times;</span>
@@ -218,22 +232,16 @@
         // Sort newest first
         const sorted = data.sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
 
-        // Build event metadata: count + latest date
+        // Build event metadata
         const eventMeta = {};
         for (const item of sorted) {
           if (!eventMeta[item.Event]) {
-            eventMeta[item.Event] = {
-              count: 0,
-              latestDate: item.Timestamp
-            };
+            eventMeta[item.Event] = { count: 0, latestDate: item.Timestamp };
           }
           eventMeta[item.Event].count++;
         }
 
-        // Get unique event names (preserve sorted order)
         const uniqueEvents = [...new Set(sorted.map(d => d.Event))];
-
-        // Populate dropdown with name, date, and count
         const select = document.getElementById("eventSelect");
         uniqueEvents.forEach(eventName => {
           const meta = eventMeta[eventName];
@@ -244,25 +252,22 @@
           select.appendChild(option);
         });
 
-        // Hide loading animation
+        // Hide the loading overlay
         document.getElementById("loading").classList.add("hidden");
 
-        // Event select handler
         select.addEventListener("change", (e) => {
           const selectedEvent = e.target.value;
           if (selectedEvent) renderGallery(selectedEvent);
           else document.getElementById("gallery").innerHTML = "";
         });
 
-      } catch(err) {
+      } catch (err) {
         console.error("Error loading images:", err);
       }
     }
 
     function renderGallery(eventName) {
       const filtered = allData.filter(d => d.Event === eventName);
-
-      // Remove duplicate URLs
       const seen = new Set();
       const uniqueByUrl = filtered.filter(img => {
         if (seen.has(img.URL)) return false;
@@ -280,13 +285,11 @@
         </div>
       `).join('');
 
-      // Add modal click behavior
       gallery.querySelectorAll(".image-container").forEach(container => {
         container.addEventListener("click", () => openModal(container.dataset.url));
       });
     }
 
-    // Modal logic
     const modal = document.getElementById("modal");
     const modalImg = document.getElementById("modalImg");
     const modalClose = document.getElementById("modalClose");
@@ -302,8 +305,8 @@
     }
 
     modalClose.addEventListener("click", closeModal);
-    modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
-    window.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+    modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+    window.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
 
     loadData();
   </script>
