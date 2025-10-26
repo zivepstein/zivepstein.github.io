@@ -11,16 +11,35 @@
     background: #000;
     height: 100%;
     width: 100%;
+    color: white;
+    font-family: 'Trebuchet MS', sans-serif;
   }
 
+  /* ===== Controls ===== */
+  #controls {
+    padding: 10px;
+    background: #111;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  select {
+    background: #000;
+    color: white;
+    border: 1px solid #555;
+    padding: 5px 10px;
+    font-size: 1rem;
+  }
+
+  /* ===== Gallery Grid ===== */
   .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    column-gap: 4px;  /* gap between columns */
-    row-gap: 0;       /* no gap between rows */
+    column-gap: 4px;
+    row-gap: 0;
     width: 100vw;
-    height: 100vh;
-    padding: 0;       /* remove extra padding to avoid vertical gaps */
+    height: calc(100vh - 50px);
     box-sizing: border-box;
     overflow-y: auto;
   }
@@ -28,8 +47,9 @@
   .image-container {
     position: relative;
     width: 100%;
-    aspect-ratio: 1 / 1; /* ensures square cells */
+    aspect-ratio: 1 / 1;
     overflow: hidden;
+    cursor: pointer;
   }
 
   .image-container img {
@@ -37,6 +57,11 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: transform 0.2s ease;
+  }
+
+  .image-container:hover img {
+    transform: scale(1.05);
   }
 
   .overlay {
@@ -58,51 +83,227 @@
   .image-container:hover .overlay {
     opacity: 1;
   }
+
+  /* ===== Modal ===== */
+  #modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+  }
+
+  #modalContent {
+    width: 80vmin;
+    height: 80vmin;
+    position: relative;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #modalContent img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  #modalClose {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+  }
+
+  /* ===== Seance Loading Animation ===== */
+  #loading {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center, #111 0%, #000 80%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #ccc;
+    font-family: 'Cinzel', serif;
+    text-align: center;
+    z-index: 2000;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+  }
+
+  #loading.hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .planchette {
+    width: 80px;
+    height: 80px;
+    border: 2px solid #666;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    animation: spin 4s linear infinite;
+    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    animation: flicker 2s infinite;
+    text-shadow: 0 0 8px #9f79ff, 0 0 20px #9f79ff;
+  }
+
+  @keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+      opacity: 1;
+      text-shadow: 0 0 8px #a673ff, 0 0 20px #9f79ff;
+    }
+    20%, 24%, 55% {
+      opacity: 0.4;
+      text-shadow: none;
+    }
+  }
 </style>
 </head>
 <body>
+  <!-- Seance Loading Screen -->
+  <div id="loading">
+    <div class="planchette"></div>
+    <div class="loading-text">🔮 Summoning images...</div>
+  </div>
+
+  <div id="controls">
+    <label for="eventSelect">Select Event: </label>
+    <select id="eventSelect">
+      <option value="">-- Choose an event --</option>
+    </select>
+  </div>
+
   <div class="gallery" id="gallery"></div>
+
+  <!-- Modal -->
+  <div id="modal">
+    <div id="modalContent">
+      <span id="modalClose">&times;</span>
+      <img id="modalImg" src="" alt="">
+    </div>
+  </div>
 
   <script>
     const dataUrl =
       "https://api.allorigins.win/raw?url=" +
       encodeURIComponent("https://seance.m4ke.workers.dev/log");
 
+    let allData = [];
+
     async function loadData() {
       try {
         const res = await fetch(dataUrl, { cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-
         if (!Array.isArray(data) || !data.length) return;
 
+        allData = data;
+
         // Sort newest first
-        const sorted = data.sort(
-          (a, b) => new Date(b.Timestamp) - new Date(a.Timestamp)
-        );
+        const sorted = data.sort((a, b) => new Date(b.Timestamp) - new Date(a.Timestamp));
 
-        // Identify the most recent event
-        const latestEvent = sorted[0].Event;
+        // Build event metadata: count + latest date
+        const eventMeta = {};
+        for (const item of sorted) {
+          if (!eventMeta[item.Event]) {
+            eventMeta[item.Event] = {
+              count: 0,
+              latestDate: item.Timestamp
+            };
+          }
+          eventMeta[item.Event].count++;
+        }
 
-        // Filter all images with that event
-        const filtered = data.filter(d => d.Event === latestEvent);
+        // Get unique event names (preserve sorted order)
+        const uniqueEvents = [...new Set(sorted.map(d => d.Event))];
 
-        // Reverse order
-        const reversed = [...filtered].reverse();
+        // Populate dropdown with name, date, and count
+        const select = document.getElementById("eventSelect");
+        uniqueEvents.forEach(eventName => {
+          const meta = eventMeta[eventName];
+          const dateStr = new Date(meta.latestDate).toISOString().split("T")[0];
+          const option = document.createElement("option");
+          option.value = eventName;
+          option.textContent = `${eventName} (${dateStr} • ${meta.count})`;
+          select.appendChild(option);
+        });
 
-        // Render images as squares with hover prompt
-        document.getElementById("gallery").innerHTML = reversed
-          .map(img => `
-            <div class="image-container">
-              <img src="${img.URL}" alt="">
-              <div class="overlay">${img.Prompt || "(no prompt)"}</div>
-            </div>
-          `).join('');
+        // Hide loading animation
+        document.getElementById("loading").classList.add("hidden");
+
+        // Event select handler
+        select.addEventListener("change", (e) => {
+          const selectedEvent = e.target.value;
+          if (selectedEvent) renderGallery(selectedEvent);
+          else document.getElementById("gallery").innerHTML = "";
+        });
 
       } catch(err) {
         console.error("Error loading images:", err);
       }
     }
+
+    function renderGallery(eventName) {
+      const filtered = allData.filter(d => d.Event === eventName);
+
+      // Remove duplicate URLs
+      const seen = new Set();
+      const uniqueByUrl = filtered.filter(img => {
+        if (seen.has(img.URL)) return false;
+        seen.add(img.URL);
+        return true;
+      });
+
+      const reversed = [...uniqueByUrl].reverse();
+      const gallery = document.getElementById("gallery");
+
+      gallery.innerHTML = reversed.map(img => `
+        <div class="image-container" data-url="${img.URL}">
+          <img src="${img.URL}" alt="">
+          <div class="overlay">${img.Prompt || "(no prompt)"}</div>
+        </div>
+      `).join('');
+
+      // Add modal click behavior
+      gallery.querySelectorAll(".image-container").forEach(container => {
+        container.addEventListener("click", () => openModal(container.dataset.url));
+      });
+    }
+
+    // Modal logic
+    const modal = document.getElementById("modal");
+    const modalImg = document.getElementById("modalImg");
+    const modalClose = document.getElementById("modalClose");
+
+    function openModal(src) {
+      modalImg.src = src;
+      modal.style.display = "flex";
+    }
+
+    function closeModal() {
+      modal.style.display = "none";
+      modalImg.src = "";
+    }
+
+    modalClose.addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+    window.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 
     loadData();
   </script>
